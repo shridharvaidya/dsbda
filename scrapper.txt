@@ -1,0 +1,50 @@
+import requests
+from bs4 import BeautifulSoup as bs
+import pandas as pd 
+
+!Pip install bs4
+
+link=''
+
+# from raw 
+headers =
+{ 
+	'User-Agent':""
+}
+
+page= requests.get(link,headers=heasers)
+page
+
+soup = bs(page.content,'html.parser') 
+
+print(soup.prettify()) 
+
+reviews = soup.findAll('div',{'class':''})
+for review in reviews:
+	print(review.get_text(),'\n')
+
+ratings = soup.findAll('div',{'class':''})
+soup = bs4.BeautifulSoup(request1.text)
+request1 = requests.get('url')
+
+cust_names = soup.findAll('p',{'class':''})
+name_array = []
+for cust_name in cust_names:
+	print(cust_name.get_text());
+	name_array.append(customer.name.get_text())
+
+df = pd.DataFrame()
+df['cust-name'] = name_array[:5]
+
+
+
+or alternate :
+names = soup.find_all('span',class_='a-profile-name') 
+names
+#Extracting customer names
+cust_name = []
+
+for i in range(len(names)):
+    cust_name.append(names[i].get_text())
+
+cust_name 
