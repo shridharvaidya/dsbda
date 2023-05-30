@@ -1,0 +1,13 @@
+Steps->
+process => File tab - new -Java Project - name - next - click on libraries - add external Jars
+- on left, file system - scroll down usr - lib - hadoop -selct all jar folders only click next then , again click on add external jars  - click on client - select all click ok - then finish.
+
+then src under project - right clikc -new - class - file name(Name:) -(WordCount) - click finish.
+
+
+---commands ---
+hdfs dfs -ls
+hdfs dfs -mkdir InputFolder
+hdfs dfs -put myfile.txt InputFolder
+hadoop jar file.jar package/class InputFolder OutputFolder
+hdfs dfs -cat OutputFolder/part-r-00000

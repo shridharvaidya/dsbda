@@ -1,0 +1,73 @@
+i. Create and Load table with Online Retail data in Hive.
+
+create external table retail( """""""""" ) 
+row format delimited fields terminated by "," stored as textfile;
+
+load data local inpath 'retail.csv' into table retail ;
+
+j. Create Index on Online Retail Table in Hive.
+
+create index retail_index on retail(country) as 'org.apache.hadoop.hive.qp.compact.CompactIndexHandler' with deferred rebuild ;
+
+k. Find the total, average sales in Hive
+
+select sum(unitprice*quantity) from retail ;
+select avg(unitprice*quantity) from retail ;
+
+
+l. Find Order details with maximum cost.
+
+select invoiceno, max(quantity*unitprice) as num1 from retail group by invoiceno order by num1 DESC limit 1;
+
+m. Find Customer details with maximum order total.
+
+select customerid, max(quantity*unitprice) as num1 from retail group by customerid order by num1 DESC limit 1;
+
+n. Find the Country with maximum and minimum sale.
+
+select country, max(quantity*unitprice) as num1 from retail group by country order by num1 DESC LIMit 1;
+select country, max(quantity*unitprice) as num1 from retail group by country order by num1 ASC LIMit 1;
+
+
+
+o. Creating an external Hive table to connect to the HBase for OnlineRetail.
+
+hbase(main):002:0> create 'olRetail', 'id', 'product', 'cust' 
+0 row(s) in 1.1620 seconds
+
+=> Hbase::Table - olRetail
+hbase(main):003:0> put 'olRetail',1, 'product:name', 'aa' 
+0 row(s) in 0.2140 seconds
+
+hbase(main):004:0> put 'olRetail',1, 'cust:name', 'bb' 
+0 row(s) in 0.0080 seconds
+
+hbase(main):005:0> scan 'olRetail'
+ROW                   COLUMN+CELL                                               
+ 1                    column=cust:name, timestamp=1652702926898, value=bb       
+ 1                    column=product:name, timestamp=1652702913938, value=aa    
+1 row(s) in 0.0410 seconds
+
+hbase(main):006:0> put 'olRetail',2, 'product:name', 'cc' 
+0 row(s) in 0.0080 seconds
+
+hbase(main):007:0> put 'olRetail',2, 'cust:name', 'dd' 
+0 row(s) in 0.0040 seconds
+
+hbase(main):008:0> scan 'olRetail'
+ROW                   COLUMN+CELL                                               
+ 1                    column=cust:name, timestamp=1652702926898, value=bb       
+ 1                    column=product:name, timestamp=1652702913938, value=aa    
+ 2                    column=cust:name, timestamp=1652702971067, value=dd       
+ 2                    column=product:name, timestamp=1652702958695, value=cc    
+2 row(s) in 0.0130 seconds
+
+hbase(main):009:0> 
+
+create external table onlineRetail(id int, product string, cust string)
+    > stored by 'org.apache.hadoop.hive.hbase.HBaseStorageHandler'
+    > with serdeproperties ("hbase.columns.mapping"=":key,product:name,cust:name")
+    > tblproperties("hbase.table.name"="olRetail") ;
+
+p. Display records of OnlineRetail Table in Hbase.
+select * from onlineRetail ;

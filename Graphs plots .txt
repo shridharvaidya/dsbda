@@ -1,0 +1,44 @@
+Graphs plots :
+df[df=='?'].sum()
+num_cols = df.select_dtypes(include=['number']).columns
+df['chol'].value_counts()
+each unique value count
+
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+1)Heatmap: 
+   corr_matrix = df.corr()
+   plt.figure(figsize=(10,8))
+   sns.heatmap(df.corr(),annot=True)
+
+   plt.show()
+   plt.title()
+   plt.xlabel()
+   plt.ylabel()
+2)line graph:
+  x = df['age'].values[:10]
+  y = df['chol'].values[:10]
+  plt.plot(x,y)
+  df['num'].value_counts()
+3)Bar graph
+  plt.bar(categories=['x_labels_array'],values=df['num'].value_counts().values(2D array))
+4)countplot
+  sns.countplot(df,x='num')--likebarplor
+5)plt.hist(df['thalach'])--one value 2d array
+  plt.show()
+6)scatter plot
+  plt.scatter(x=df['age'],y=df['thalach']),,thalach as per age
+7)pie chart
+  plt.pie(df['num'].value_counts().values,labels=[],autopct="%1.1f%%")
+  plt.pie(df['num'].value_counts().values,labels=[],autopct="%1.1f%%")
+
+8)df = df[df['thal']!='?']
+  df['thal'].value_counts().values
+9)boxplot by sns
+  sns.boxplot(df['age'])
+  sns.boxplot(data=[df[],df[],df[]])
+10)plt.plot(df['age'].values,'o')
+  

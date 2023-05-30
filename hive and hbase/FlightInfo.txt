@@ -1,0 +1,134 @@
+Q6)
+
+a. Create Flight Info Hbase Table(with Flight information, schedule, and delay)
+
+hbase(main):003:0> create 'flight1', 'finfo', 'fsch'
+0 row(s) in 0.5930 seconds
+
+=> Hbase::Table - flight1
+hbase(main):004:0> put 'flight1', 1, 'finfo:src','pune'
+0 row(s) in 0.1240 seconds
+
+hbase(main):005:0> put 'flight1', 1, 'finfo:dest','mumbai'
+0 row(s) in 0.0080 seconds
+
+hbase(main):006:0> put 'flight1', 1, 'fsch:at','10am'
+0 row(s) in 0.0070 seconds
+
+hbase(main):007:0> put 'flight1', 1, 'fsch:dept','11am'
+0 row(s) in 0.0060 seconds
+
+hbase(main):008:0> put 'flight1', 1, 'fsch:delay','11min'
+0 row(s) in 0.0090 seconds
+
+hbase(main):009:0> put 'flight1', 2, 'finfo:src','delhi'
+0 row(s) in 0.0050 seconds
+
+hbase(main):010:0> put 'flight1', 2, 'finfo:dest','jaipur'
+0 row(s) in 0.0050 seconds
+
+hbase(main):011:0> put 'flight1', 2, 'fsch:at','12am'
+0 row(s) in 0.0060 seconds
+
+hbase(main):012:0> put 'flight1', 2, 'fsch:dept','1pm'
+0 row(s) in 0.0050 seconds
+
+hbase(main):013:0> put 'flight1', 2, 'fsch:delay','1min'
+0 row(s) in 0.0050 seconds
+
+hbase(main):014:0> scan flight1
+NameError: undefined local variable or method `flight1' for #<Object:0x5d968ccf>
+
+hbase(main):015:0> scan 'flight1'
+ROW                   COLUMN+CELL                                               
+ 1                    column=finfo:dest, timestamp=1652595906205, value=mumbai  
+ 1                    column=finfo:src, timestamp=1652595895962, value=pune     
+ 1                    column=fsch:at, timestamp=1652595949439, value=10am       
+ 1                    column=fsch:delay, timestamp=1652595971142, value=11min   
+ 1                    column=fsch:dept, timestamp=1652595958918, value=11am     
+ 2                    column=finfo:dest, timestamp=1652596028393, value=jaipur  
+ 2                    column=finfo:src, timestamp=1652595989445, value=delhi    
+ 2                    column=fsch:at, timestamp=1652596046048, value=12am       
+ 2                    column=fsch:delay, timestamp=1652596089775, value=1min    
+ 2                    column=fsch:dept, timestamp=1652596076279, value=1pm      
+2 row(s) in 0.0340 seconds
+
+b. Demonstrate Creating, Dropping, and altering Database tables in Hbase
+
+hbase(main):017:0> create 'temp', 'c1', 'c2'
+0 row(s) in 0.3850 seconds
+
+=> Hbase::Table - temp
+hbase(main):018:0> disable 'temp'
+0 row(s) in 1.2400 seconds
+
+hbase(main):019:0> drop 'temp'
+0 row(s) in 0.2000 seconds
+
+hbase(main):020:0> alter 'flight1', Name=> 'revenue'
+NameError: uninitialized constant Name
+
+hbase(main):021:0> alter 'flight1', NAME=> 'revenue'
+Updating all regions with the new schema...
+0/1 regions updated.
+1/1 regions updated.
+Done.
+0 row(s) in 2.2350 seconds
+
+hbase(main):022:0> put 'flight1', 1, 'revenue:rs','10000'
+0 row(s) in 0.0040 seconds
+
+hbase(main):023:0> put 'flight1', 2, 'revenue:rs','20000'
+0 row(s) in 0.0080 seconds
+
+hbase(main):024:0> scan 'flight1'
+ROW                   COLUMN+CELL                                               
+ 1                    column=finfo:dest, timestamp=1652595906205, value=mumbai  
+ 1                    column=finfo:src, timestamp=1652595895962, value=pune     
+ 1                    column=fsch:at, timestamp=1652595949439, value=10am       
+ 1                    column=fsch:delay, timestamp=1652595971142, value=11min   
+ 1                    column=fsch:dept, timestamp=1652595958918, value=11am     
+ 1                    column=revenue:rs, timestamp=1652596262829, value=10000   
+ 2                    column=finfo:dest, timestamp=1652596028393, value=jaipur  
+ 2                    column=finfo:src, timestamp=1652595989445, value=delhi    
+ 2                    column=fsch:at, timestamp=1652596046048, value=12am       
+ 2                    column=fsch:delay, timestamp=1652596089775, value=1min    
+ 2                    column=fsch:dept, timestamp=1652596076279, value=1pm      
+ 2                    column=revenue:rs, timestamp=1652596273555, value=20000   
+2 row(s) in 0.0470 seconds
+
+hbase(main):025:0> alter 'flight1', NAME=> 'totDelay'
+Updating all regions with the new schema...
+0/1 regions updated.
+1/1 regions updated.
+Done.
+0 row(s) in 2.1830 seconds
+
+hbase(main):026:0> put 'flight1', 1, 'totDelay:min','10'
+0 row(s) in 0.0080 seconds
+
+hbase(main):027:0> put 'flight1', 2, 'totDelay:min','20'
+0 row(s) in 0.0050 seconds
+
+
+c. Creating an external Hive table to connect to the HBase for Flight Information Table
+
+hive> create external table flight1(fno int, src string, dest string, at string, dept string, delay int)
+    > stored by 'org.apache.hadoop.hive.hbase.HBaseStorageHandler'
+    > with serdeproperties("hbase.columns.mapping"=":key,finfo:src,finfo:dest,fsch:at,fsch:dept, totDelay:min")
+    > TBLPROPERTIES("hbase.table.name"="flight1");
+
+d. Find the total departure delay in Hive
+
+select sum(delay) from flight1 ;
+
+e. Find the average departure delay in Hive
+
+select avg(delay) from flight1 ;
+
+f. Create index on Flight information Table
+
+hive> create index new_index_flight1 on
+    > table flight1(delay)
+    > AS 'org.apache.hadoop.hive.ql.index.compact.CompactIndexHandler'
+    > with deferred rebuild;

@@ -1,0 +1,43 @@
+a. Creation of –Cutomer_info(Cust-ID,Cust-Name,orderID), 
+order_info(OrderID,ItemID,Quantity), item_info(Item-ID,Item-Name,ItemPrice) 
+tables in Hive
+
+create table customer_info(custId int, custName string, orderId int) row format delimited fields terminated by ',' stored as textfile ;
+create table order_info(itemId int, quantity int, orderId int) ;
+create table item_info(itemId int, itemName string, itemPrice int) ;
+
+b. Load table with data from local storage in Hive.
+
+load data local inpath'/home/cloudera/custInfo.txt' into table customer_info;
+
+c. Perform Join tables with Hive
+
+select * from student join customer_info on sno=custid ;
+
+d. Create Index on Customer information system in Hive.
+
+ create index customer_info_index on table customer_info(custName)
+    > as 'org.apache.hadoop.hive.ql.index.compact.CompactIndexHandler'
+    > with deferred rebuild ;
+
+e. Find the total, average sales in Hive
+
+insert into table orderinfo values(1,2,123) ;
+insert into table order_info values(2,5,234) ;
+ select sum(quantity) from order_info ;
+ select avg(quantity) from order_info ;
+
+f. Find Order details with maximum cost.
+
+ select max(quantity) from order_info ;
+
+g. Creating an external Hive table to connect to the HBase for Customer Information 
+System.
+
+create external table ext_cust(id int, name string, orderid int)
+    > stored by 'org.apache.hadoop.hive.hbase.HBaseStorageHandler'
+    > with serdeproperties("hbase.columns.mapping"=":key,name:fname,orderid:num") 
+    > tblproperties("hbase.table.name"="customer") ;
+
+
+h. Display records of Customer Information Table in Hbase.
